@@ -3,14 +3,14 @@
  * @author DrkWithT
  * @brief Implements main rendering logic.
  * @version 0.0.1
- * @date 2024-08-24
+ * @date 2024-11-29
  * 
  * @copyright Copyright (c) 2024
  * 
  */
 
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
+#include "GLAD3/glad.h"
+#include "GLFW3/glfw3.h"
 #include <iostream>
 
 static constexpr int window_width = 480;

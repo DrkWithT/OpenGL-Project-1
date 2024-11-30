@@ -1,18 +1,16 @@
 # project.sh
 
 if [[ $# -ne 1 ]]; then
-    echo "Usage: ./project.sh [i | d | r]"
+    echo "Usage: ./project.sh [i | d | r]\ni: show info, d: do debug build, r: do release build";
     exit 1
 fi
 
-option="$1"
-
-if [[ "$option" = "d" ]]; then
-    # echo "debug build"
-    cmake --fresh -S . -B build -DBUILD_DBG:BOOL=1 && cmake --build build || cp ./build/compile_commands.json .
-elif [[ "$option" = "r" ]]; then
-    # echo "release build"
-    cmake --fresh -S . -B build -DBUILD_DBG:BOOL=0 && cmake --build build || cp ./build/compile_commands.json .
+if [[ "$1" = "d" ]]; then
+    cmake --fresh -S . -B build --preset debug-config && cmake --build build;
+    cp ./build/compile_commands.json .
+elif [[ "$1" = "r" ]]; then
+    cmake --fresh -S . -B build --preset release-config && cmake --build build;
+    cp ./build/compile_commands.json .
 else
     echo "Usage: ./project.sh [i | d | r]"
 fi

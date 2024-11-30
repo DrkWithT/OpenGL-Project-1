@@ -1,21 +1,14 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 
-project(GLSample3)
+project(OGLProject1)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# NOTE: YOU MUST use the given CMake presets!
 
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-if (BUILD_DBG)
+if (DO_DEBUG_BUILD)
     add_compile_options(-Wall -Wextra -Wpedantic -Wno-deprecated -Werror -g -Og)
 else()
     add_compile_options(-Wall -Wextra -Wpedantic -Wno-deprecated -Werror -O2)
 endif()
 
+set(MY_LINK_DIR "${CMAKE_SOURCE_DIR}/lib")
 add_subdirectory(src)

@@ -1,0 +1,13 @@
+.DS_Store
+.cache
+.git
+.vscode
+build/
+lib/
+
+src/Includes/glad/
+src/Includes/glfw/
+src/Includes/KHR/
+src/Externals/
+
+compile_commands.json

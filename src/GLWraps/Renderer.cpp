@@ -15,6 +15,8 @@ namespace GLProject1::GLWraps {
     Renderer::Renderer(Program&& program, VAO&& drawable, const RenderConfig& config)
     : m_program {program}, m_drawable {drawable}, m_bg_color {toScaledRGB(config.bg_color)} {}
 
+    bool Renderer::isReady() const { return m_program.isValid(); }
+
     void Renderer::renderBackground() {
         const auto [bg_red, bg_green, bg_blue] = getPredefinedShade(ShadeOpt::gray);
 

@@ -35,6 +35,8 @@ namespace GLProject1::GLWraps {
         }
     }
 
+    bool Program::isValid() const { return m_valid_flag; }
+
     void Program::useSelf() { glUseProgram(m_handle); }
 
     Program Program::makeProgram(const char* vtx_shader_src, const char* frag_shader_src) {

@@ -59,6 +59,11 @@ namespace GLProject1::GLWraps {
     bool Window::isReady() const { return m_ready_flag; }
 
     void Window::displayScene(Renderer& renderer) {
+        /// @note Guard clause here must trigger when the GL program build failed earlier, so I cannot draw well if that case applies.
+        if (!renderer.isReady()) {
+            return;
+        }
+
         while (!glfwWindowShouldClose(m_win_handle)) {
             /// TODO: add processInput() method!
 

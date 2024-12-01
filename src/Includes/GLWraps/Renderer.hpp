@@ -15,6 +15,7 @@ namespace GLProject1::GLWraps {
         Renderer() = delete;
         Renderer(Program&& program, VAO&& drawable, const RenderConfig& config);
 
+        bool isReady() const;
         void renderBackground();
         void renderThing();
 

@@ -80,6 +80,7 @@ namespace GLProject1::GLWraps {
         Program(shader_handle_t vtx_shader, shader_handle_t geo_shader, shader_handle_t frg_shader);
 
     public:
+        bool isValid() const;
         void useSelf();
 
         [[nodiscard]] static Program makeProgram(const char* vtx_shader_src, const char* frag_shader_src);

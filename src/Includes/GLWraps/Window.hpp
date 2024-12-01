@@ -1,6 +1,7 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
+#include "GLWraps/Renderer.hpp"
 #include "GLFW3/glfw3.h"
 
 namespace GLProject1::GLWraps {
@@ -27,7 +28,7 @@ namespace GLProject1::GLWraps {
 
         [[nodiscard]] bool isReady() const;
 
-        void displayScene();
+        void displayScene(Renderer& renderer);
 
         // void displayScene(Renderer& renderer);
 

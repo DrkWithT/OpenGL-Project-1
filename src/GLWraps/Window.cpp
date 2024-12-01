@@ -12,7 +12,6 @@
 #include <iostream>
 #include "GLAD3/glad.h"
 
-#include "GLWraps/ColorUtils.hpp"
 #include "GLWraps/Window.hpp"
 
 namespace GLProject1::GLWraps {
@@ -59,17 +58,12 @@ namespace GLProject1::GLWraps {
 
     bool Window::isReady() const { return m_ready_flag; }
 
-    void Window::displayScene(/* Renderer& renderer, */) {
-        /// TODO: refactor this coloring into the renderer or scene later??
-        const auto [bg_red, bg_green, bg_blue] = getPredefinedShade(ShadeOpt::gray);
-        /// TODO: move this triangle color into renderer or scene??
-        // const auto [obj_red, obj_green, obj_blue] = toScaledRGB(RGBColor {125.0f, 175.0f, 75.0f});
-
+    void Window::displayScene(Renderer& renderer) {
         while (!glfwWindowShouldClose(m_win_handle)) {
-            // TODO: add processInput() method!
+            /// TODO: add processInput() method!
 
-            glClearColor(bg_red, bg_green, bg_blue, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            renderer.renderBackground();
+            renderer.renderThing();
 
             glfwPollEvents();
             glfwSwapBuffers(m_win_handle);

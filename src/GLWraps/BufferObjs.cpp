@@ -10,13 +10,12 @@
 
 #include "GLWraps/BufferObjs.hpp"
 #include "GLAD3/glad.h"
-#include <OpenGL/OpenGL.h>
 
 namespace GLProject1::GLWraps {
     static constexpr int point_dim = 3;
 
     VertexStore::VertexStore(std::initializer_list<PositionVertex> points)
-    : m_data {std::make_unique<float[]>(3 * points.size())}, m_length {points.size()}, m_datasize {3 * points.size()} {
+    : m_data {std::make_unique<float[]>(3 * points.size())}, m_length {points.size()}, m_datasize {3 * sizeof(float) * points.size()} {
         int point_data_pos = 0;
 
         for (const auto [x, y, z] : points) {

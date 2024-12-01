@@ -8,7 +8,7 @@
  * 
  */
 
-#include "GlWraps/ShaderUtils.hpp"
+#include "GLWraps/ShaderUtils.hpp"
 
 namespace GLProject1::GLWraps {
     static constexpr shader_handle_t dud_shader_id = 0;
@@ -16,6 +16,23 @@ namespace GLProject1::GLWraps {
 
     Program::Program()
     : m_handle {dud_shader_id}, m_valid_flag {false} {}
+
+    Program::Program(shader_handle_t vtx_shader, shader_handle_t frg_shader)
+    : m_handle {glCreateProgram()}, m_valid_flag {true} {
+        glAttachShader(m_handle, vtx_shader);
+        glAttachShader(m_handle, frg_shader);
+        glLinkProgram(m_handle);
+
+        int link_ok = 0;
+        char link_log[256];
+        glGetProgramiv(m_handle, GL_LINK_STATUS, &link_ok);
+
+        if (!link_ok) {
+            glGetShaderInfoLog(m_handle, 256, nullptr, link_log);
+            std::cerr << std::format("Error [shader linking]: \"{}\"\n", link_log);
+            m_valid_flag = false;
+        }
+    }
 
     Program::Program(shader_handle_t vtx_shader, shader_handle_t geo_shader, shader_handle_t frg_shader)
     : m_handle {glCreateProgram()}, m_valid_flag {true} {

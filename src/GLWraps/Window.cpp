@@ -70,8 +70,8 @@ namespace GLProject1::GLWraps {
             renderer.renderBackground();
             renderer.renderThing();
 
-            glfwPollEvents();
             glfwSwapBuffers(m_win_handle);
+            glfwPollEvents();
         }
     }
 }

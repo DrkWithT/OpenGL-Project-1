@@ -42,13 +42,13 @@ const GLWraps::VertexStore draw_data {{
 constexpr const char* vtx_code = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main() {\n"
-    "gl_Position = vec3(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\n";
 
-constexpr const char* frag_code = "#version 330 core"
-    "out vec4 FragColor;"
+constexpr const char* frag_code = "#version 330 core\n"
+    "out vec4 FragColor;\n"
     "void main() {\n"
-    "FragColor = vec4(50.0f, 200.0f, 50.0f, 1.0f);"
+    "FragColor = vec4(50.0f, 200.0f, 50.0f, 1.0f);\n"
     "}\n";
 
 constexpr GLWraps::RGBColor background_color {

@@ -67,7 +67,6 @@ namespace GLProject1::GLWraps {
         while (!glfwWindowShouldClose(m_win_handle)) {
             /// TODO: add processInput() method!
 
-            renderer.renderBackground();
             renderer.renderThing();
 
             glfwSwapBuffers(m_win_handle);

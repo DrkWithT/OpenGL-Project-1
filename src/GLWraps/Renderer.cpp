@@ -17,14 +17,10 @@ namespace GLProject1::GLWraps {
 
     bool Renderer::isReady() const { return m_program.isValid(); }
 
-    void Renderer::renderBackground() {
-        const auto [bg_red, bg_green, bg_blue] = m_bg_color;
-
-        glClearColor(bg_red, bg_green, bg_blue, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
     void Renderer::renderThing() {
+        glClearColor(m_bg_color.r, m_bg_color.g, m_bg_color.b, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         m_program.useSelf();
         m_drawable.bindSelf();
 

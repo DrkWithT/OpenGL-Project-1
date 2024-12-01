@@ -56,7 +56,7 @@ namespace GLProject1::GLWraps {
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo_handle);
 
         glBufferData(GL_ARRAY_BUFFER, vertex_data.getDataSize(), vertex_data.viewData(), GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, point_dim * sizeof(float), nullptr);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, point_dim * sizeof(float), (void *)0);
         glEnableVertexAttribArray(0);
     }
 

@@ -48,7 +48,7 @@ constexpr const char* vtx_code = "#version 330 core\n"
 constexpr const char* frag_code = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main() {\n"
-    "FragColor = vec4(50.0f, 200.0f, 50.0f, 1.0f);\n"
+    "FragColor = vec4(0.375f, 0.875f, 0.25f, 1.0f);\n"
     "}\n";
 
 constexpr GLWraps::RGBColor background_color {

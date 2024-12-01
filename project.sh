@@ -6,10 +6,10 @@ if [[ $# -ne 1 ]]; then
 fi
 
 if [[ "$1" = "d" ]]; then
-    rm -rf ./build/ && cmake --fresh -S . -B build --preset debug-config && cmake --build build;
+    cmake --fresh -S . -B build --preset debug-config && cmake --build build;
     cp ./build/compile_commands.json .
 elif [[ "$1" = "r" ]]; then
-    rm -rf ./build/ && cmake --fresh -S . -B build --preset release-config && cmake --build build;
+    cmake --fresh -S . -B build --preset release-config && cmake --build build;
     cp ./build/compile_commands.json .
 else
     echo "Usage: ./project.sh [i | d | r]"

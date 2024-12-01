@@ -1,3 +1,3 @@
 add_library(GLWraps "")
 target_include_directories(GLWraps PUBLIC "${MY_HEADERS_DIR}")
-target_sources(GLWraps PRIVATE ColorUtils.cpp PRIVATE Window.cpp)
+target_sources(GLWraps PRIVATE ColorUtils.cpp PRIVATE BufferObjs.cpp PRIVATE ShaderUtils.cpp PRIVATE Renderer.cpp PRIVATE Window.cpp)

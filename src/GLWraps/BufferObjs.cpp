@@ -72,6 +72,8 @@ namespace GLProject1::GLWraps {
         return m_handle;
     }
 
+    int VAO::getIndexCount() const { return m_ebo_index_n; }
+
     void VAO::unbindSelf() & {
         glBindVertexArray(0);
     }

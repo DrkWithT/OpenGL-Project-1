@@ -28,7 +28,7 @@ namespace GLProject1::GLWraps {
         }
     }
 
-    ScaledRGBColor toScaledRGB(RGBColor user_color) noexcept {
+    ScaledRGBColor toScaledRGB(const RGBColor& user_color) noexcept {
         const auto [red, green, blue] = user_color;
 
         return {

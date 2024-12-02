@@ -22,7 +22,7 @@ namespace GLProject1::GLWraps {
 
     [[nodiscard]] ScaledRGBColor getPredefinedShade(ShadeOpt opt) noexcept;
 
-    [[nodiscard]] ScaledRGBColor toScaledRGB(RGBColor user_color) noexcept;
+    [[nodiscard]] ScaledRGBColor toScaledRGB(const RGBColor& user_color) noexcept;
 }
 
 #endif

@@ -12,7 +12,7 @@
 #include "GLWraps/Renderer.hpp"
 
 namespace GLProject1::GLWraps {
-    Renderer::Renderer(Program&& program, VAO&& drawable, const RenderConfig& config)
+    Renderer::Renderer(Program&& program, Mesh&& drawable, const RenderConfig& config)
     : m_program {program}, m_drawable {drawable}, m_bg_color {toScaledRGB(config.bg_color)} {}
 
     bool Renderer::isReady() const { return m_program.isValid(); }
@@ -22,10 +22,9 @@ namespace GLProject1::GLWraps {
         glClear(GL_COLOR_BUFFER_BIT);
 
         m_program.useSelf();
-        m_drawable.bindSelf();
+        m_drawable.getVAO().bindSelf();
+        glDrawElements(GL_TRIANGLES, m_drawable.getVAO().getIndexCount(), GL_UNSIGNED_INT, 0);
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        m_drawable.unbindSelf();
+        m_drawable.getVAO().unbindSelf();
     }
 }

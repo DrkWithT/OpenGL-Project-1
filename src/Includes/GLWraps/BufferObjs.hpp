@@ -3,16 +3,11 @@
 
 #include <memory>
 #include <initializer_list>
+#include <vector>
+
+#include "GLWraps/BasicTypes.hpp"
 
 namespace GLProject1::GLWraps {
-    using buf_handle_t = unsigned int;
-
-    struct PositionVertex {
-        float x;
-        float y;
-        float z;
-    };
-
     class VertexStore {
     public:
         VertexStore() = delete;
@@ -28,22 +23,37 @@ namespace GLProject1::GLWraps {
         std::size_t m_datasize;
     };
 
-    [[nodiscard]] buf_handle_t makeVBOHandle();
-    [[nodiscard]] buf_handle_t makeVAOHandle();
+
+    struct MeshData {
+        VertexStore vertex_data;
+        std::vector<glw_handle_t> index_data;
+    };
+
+
+
+    [[nodiscard]] glw_handle_t makeBufferHandle();
+    [[nodiscard]] glw_handle_t makeVAOHandle();
+
 
     /// @note Contains a VAO with an internal VBO handle too.
     class VAO {
     public:
         VAO() = delete;
-        VAO(const VertexStore& data);
+        VAO(const MeshData& data);
 
-        [[nodiscard]] buf_handle_t getHandle() const;
-        void unbindSelf();
-        void bindSelf();
+        [[nodiscard]] glw_handle_t getHandle() const;
+        [[nodiscard]] int getIndexCount() const;
+
+        void unbindSelf() &;
+        void bindSelf() &;
+        void unbindSelf() const&;
+        void bindSelf() const&;
 
     private:
-        buf_handle_t m_handle;
-        buf_handle_t m_vbo_handle;
+        glw_handle_t m_handle;
+        glw_handle_t m_vbo_handle;
+        glw_handle_t m_ebo_handle;
+        int m_ebo_index_n;
     };
 }
 

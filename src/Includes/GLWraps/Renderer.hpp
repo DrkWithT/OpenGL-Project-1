@@ -2,10 +2,11 @@
 #define RENDERER_HPP
 
 #include "GLWraps/ColorUtils.hpp"
-#include "GLWraps/BufferObjs.hpp"
+#include "GLWraps/Mesh.hpp"
 #include "GLWraps/ShaderUtils.hpp"
 
 namespace GLProject1::GLWraps {
+    /// NOTE: This could be later repurposed into a Scene type.
     struct RenderConfig {
         RGBColor bg_color;
     };
@@ -13,7 +14,7 @@ namespace GLProject1::GLWraps {
     class Renderer {
     public:
         Renderer() = delete;
-        Renderer(Program&& program, VAO&& drawable, const RenderConfig& config);
+        Renderer(Program&& program, Mesh&& drawable, const RenderConfig& config);
 
         bool isReady() const;
         void renderBackground();
@@ -22,10 +23,9 @@ namespace GLProject1::GLWraps {
     private:
         Program m_program;
 
-        /// TODO: replace with collection of drawables as a "Scene"!
-        VAO m_drawable;
+        /// TODO: create a Scene type storing Meshes and background color data.
+        Mesh m_drawable;
 
-        /// TODO: refactor VAO & colors out into a "Drawable" later.
         ScaledRGBColor m_bg_color;
     };
 }

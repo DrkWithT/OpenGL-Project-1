@@ -18,10 +18,7 @@ using MyGLConfig = GLWraps::WindowGLConfig;
 using MyProgram = GLWraps::Program;
 using MyRenderer = GLWraps::Renderer;
 using MyWindow = GLWraps::Window;
-
-/// TODO: replace this later when a Drawable ADT is made.
 using MyPoint = GLWraps::PositionVertex;
-using MyDrawable = GLWraps::Mesh;
 
 constexpr const char* window_title = "Project 1";
 constexpr int window_width = 480;
@@ -31,20 +28,6 @@ constexpr MyGLConfig app_gl_hints {
     3,    // OpenGL major version (3)
     3,    // OpenGL minor version (3)
     1     // GLFW frame swap interval (1)
-};
-
-const GLWraps::MeshData draw_data {
-    /// NOTE: points for square
-    GLWraps::VertexStore {{
-    MyPoint {0.5f, 0.5f, 0.0f},
-    {0.5f, -0.5f, 0.0f},
-    {-0.5f, -0.5f, 0.0f},
-    {-0.5f, 0.5f, 0.0f}}},
-    /// NOTE: point indexes per primitive (triangles of top left, bottom right)
-    {
-        0, 1, 3,
-        1 ,2 ,3
-    }
 };
 
 constexpr const char* vtx_code = "#version 330 core\n"
@@ -59,23 +42,64 @@ constexpr const char* frag_code = "#version 330 core\n"
     "FragColor = vec4(0.375f, 0.875f, 0.25f, 1.0f);\n"
     "}\n";
 
+/// NOTE: top right square
+const GLWraps::MeshData mesh_1 {
+    GLWraps::VertexStore {{
+    MyPoint {0.25f, 0.75f, 0.0f},
+    {0.75f, 0.75f, 0.0f},
+    {0.75f, 0.25f, 0.0f},
+    {0.25f, 0.25f, 0.0f}}},
+    /// NOTE: point indexes per primitive (triangles of top left, bottom right)
+    {
+        0, 1, 3,
+        1 ,2 ,3
+    }
+};
+
+/// NOTE: bottom right square
+const GLWraps::MeshData mesh_2 {
+    GLWraps::VertexStore {{
+    MyPoint {-0.5f, -0.25f, 0.0f},
+    {-0.25f, -0.25f, 0.0f},
+    {-0.25f, -0.5f, 0.0f},
+    {-0.5f, -0.5f, 0.0f}}},
+    /// NOTE: point indexes per primitive (triangles of top left, bottom right)
+    {
+        0, 1, 3,
+        1 ,2 ,3
+    }
+};
+
 /// NOTE: color is dark gray
-constexpr GLWraps::RGBColor background_color {
+const GLWraps::ScaledRGBColor bg_color = GLWraps::toScaledRGB({
     120,
     120,
     120
-};
+});
 
-/// NOTE: color is pastel orange
-const GLWraps::ScaledRGBColor thing_color = GLWraps::toScaledRGB({
+/// NOTE: pastel orange
+const GLWraps::ScaledRGBColor color_1 = GLWraps::toScaledRGB({
     255,
     180,
     80
 });
 
+/// NOTE: neon blue
+const GLWraps::ScaledRGBColor color_2 = GLWraps::toScaledRGB({
+    80,
+    80,
+    255
+});
+
 int main() {
     MyWindow app_window {window_title, window_width, window_height, 1, app_gl_hints};
-    MyRenderer app_renderer {MyProgram::makeProgram(vtx_code, frag_code), MyDrawable {draw_data, thing_color}, {background_color}};
+    MyRenderer app_renderer {
+        GLWraps::makeScene({
+            GLWraps::Mesh {mesh_1, color_1},
+            {mesh_2, color_2}
+        }, bg_color),
+        MyProgram::makeProgram(vtx_code, frag_code)
+    };
 
     if (!app_window.isReady()) {
         return -1;

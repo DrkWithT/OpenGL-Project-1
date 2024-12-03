@@ -38,8 +38,9 @@ constexpr const char* vtx_code = "#version 330 core\n"
 
 constexpr const char* frag_code = "#version 330 core\n"
     "out vec4 FragColor;\n"
+    "uniform vec3 myColor;\n"
     "void main() {\n"
-    "FragColor = vec4(0.375f, 0.875f, 0.25f, 1.0f);\n"
+    "FragColor = vec4(myColor.xyz, 1.0f);\n"
     "}\n";
 
 /// NOTE: top right square
@@ -98,7 +99,8 @@ int main() {
             GLWraps::Mesh {mesh_1, color_1},
             {mesh_2, color_2}
         }, bg_color),
-        MyProgram::makeProgram(vtx_code, frag_code)
+        MyProgram::makeProgram(vtx_code, frag_code),
+        "myColor"
     };
 
     if (!app_window.isReady()) {

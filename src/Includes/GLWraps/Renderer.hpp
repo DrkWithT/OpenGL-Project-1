@@ -3,6 +3,7 @@
 
 #include <initializer_list>
 #include <vector>
+#include "GLWraps/BasicTypes.hpp"
 #include "GLWraps/ColorUtils.hpp"
 #include "GLWraps/Mesh.hpp"
 #include "GLWraps/ShaderUtils.hpp"
@@ -24,7 +25,7 @@ namespace GLProject1::GLWraps {
     class Renderer {
     public:
         Renderer() = delete;
-        Renderer(Scene&& scene, Program&& program);
+        Renderer(Scene&& scene, Program&& program, const char* stencil_uniform_name);
 
         bool isReady() const;
         void renderScene();
@@ -32,9 +33,11 @@ namespace GLProject1::GLWraps {
     private:
         Scene m_scene;
         Program m_program;
+        const char* m_fixed_stencil_name;
 
         const std::vector<Mesh>& getSceneObjects() const;
         const ScaledRGBColor& getSceneBackground() const;
+        void updateMeshStencil(glw_uniform_handle_t uniform_handle, const ScaledRGBColor& color);
     };
 }
 

@@ -4,10 +4,9 @@
 #include <format>
 #include <iostream>
 #include "GLAD3/glad.h"
+#include "GLWraps/BasicTypes.hpp"
 
 namespace GLProject1::GLWraps {
-    using shader_handle_t = unsigned int;
-
     enum class ShaderType {
         vertex,
         geometry,
@@ -35,7 +34,7 @@ namespace GLProject1::GLWraps {
     template <ShaderType T>
     class Shader {
     private:
-        shader_handle_t m_handle;
+        glw_handle_t m_handle;
         bool m_valid_flag;
 
     public:
@@ -60,7 +59,7 @@ namespace GLProject1::GLWraps {
             glDeleteShader(m_handle);
         }
 
-        [[nodiscard]] shader_handle_t getHandle() const { return m_handle; }
+        [[nodiscard]] glw_handle_t getHandle() const { return m_handle; }
 
         [[nodiscard]] bool isValid() const { return m_valid_flag; }
     };
@@ -71,16 +70,17 @@ namespace GLProject1::GLWraps {
 
     class Program {
     private:
-        shader_handle_t m_handle;
+        glw_handle_t m_handle;
         bool m_valid_flag;
 
         /// @note Default Program is an unusable dud in case Shaders fail to build!
         Program();
-        Program(shader_handle_t vtx_shader, shader_handle_t frg_shader);
-        Program(shader_handle_t vtx_shader, shader_handle_t geo_shader, shader_handle_t frg_shader);
+        Program(glw_handle_t vtx_shader, glw_handle_t frg_shader);
+        Program(glw_handle_t vtx_shader, glw_handle_t geo_shader, glw_handle_t frg_shader);
 
     public:
-        bool isValid() const;
+        [[nodiscard]] glw_handle_t getHandle() const;
+        [[nodiscard]] bool isValid() const;
         void useSelf();
 
         [[nodiscard]] static Program makeProgram(const char* vtx_shader_src, const char* frag_shader_src);

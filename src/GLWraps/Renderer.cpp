@@ -9,6 +9,8 @@
  * 
  */
 
+#include "GLWraps/BasicTypes.hpp"
+#include "GLWraps/Uniform.hpp"
 #include "GLWraps/Renderer.hpp"
 
 namespace GLProject1::GLWraps {
@@ -19,8 +21,8 @@ namespace GLProject1::GLWraps {
     }
 
 
-    Renderer::Renderer(Scene&& scene, Program&& program)
-    : m_scene {scene}, m_program {program} {}
+    Renderer::Renderer(Scene&& scene, Program&& program, const char* stencil_uniform_name)
+    : m_scene {scene}, m_program {program}, m_fixed_stencil_name {stencil_uniform_name} {}
 
     bool Renderer::isReady() const { return m_program.isValid(); }
 
@@ -30,9 +32,13 @@ namespace GLProject1::GLWraps {
         glClearColor(bg_red, bg_green, bg_blue, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        m_program.useSelf();
-
         for (const auto& mesh : getSceneObjects()) {
+            const glw_uniform_handle_t updated_uniform = glGetUniformLocation(m_program.getHandle(), m_fixed_stencil_name);
+
+            m_program.useSelf();
+
+            updateMeshStencil(updated_uniform, mesh.getColor());
+
             mesh.getVAO().bindSelf();
             glDrawElements(GL_TRIANGLES, mesh.getVAO().getIndexCount(), GL_UNSIGNED_INT, 0);
             mesh.getVAO().unbindSelf();
@@ -42,4 +48,10 @@ namespace GLProject1::GLWraps {
     const std::vector<Mesh>& Renderer::getSceneObjects() const { return m_scene.objects; }
 
     const ScaledRGBColor& Renderer::getSceneBackground() const { return m_scene.background; }
+
+    void Renderer::updateMeshStencil(glw_uniform_handle_t uniform_handle, const ScaledRGBColor& color) {
+        const auto [red, green, blue] = color;
+
+        RGBUniform::updateData(uniform_handle, red, green, blue);
+    }
 }

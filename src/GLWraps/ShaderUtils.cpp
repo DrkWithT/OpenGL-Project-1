@@ -11,13 +11,13 @@
 #include "GLWraps/ShaderUtils.hpp"
 
 namespace GLProject1::GLWraps {
-    static constexpr shader_handle_t dud_shader_id = 0;
+    static constexpr glw_handle_t dud_shader_id = 0;
 
 
     Program::Program()
     : m_handle {dud_shader_id}, m_valid_flag {false} {}
 
-    Program::Program(shader_handle_t vtx_shader, shader_handle_t frg_shader)
+    Program::Program(glw_handle_t vtx_shader, glw_handle_t frg_shader)
     : m_handle {glCreateProgram()}, m_valid_flag {true} {
         glAttachShader(m_handle, vtx_shader);
         glAttachShader(m_handle, frg_shader);
@@ -34,7 +34,7 @@ namespace GLProject1::GLWraps {
         }
     }
 
-    Program::Program(shader_handle_t vtx_shader, shader_handle_t geo_shader, shader_handle_t frg_shader)
+    Program::Program(glw_handle_t vtx_shader, glw_handle_t geo_shader, glw_handle_t frg_shader)
     : m_handle {glCreateProgram()}, m_valid_flag {true} {
         glAttachShader(m_handle, vtx_shader);
         glAttachShader(m_handle, geo_shader);
@@ -51,6 +51,8 @@ namespace GLProject1::GLWraps {
             m_valid_flag = false;
         }
     }
+
+    glw_handle_t Program::getHandle() const { return m_handle; }
 
     bool Program::isValid() const { return m_valid_flag; }
 

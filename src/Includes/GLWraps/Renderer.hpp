@@ -1,6 +1,9 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 
+#include <initializer_list>
+#include <vector>
+#include "GLWraps/BasicTypes.hpp"
 #include "GLWraps/ColorUtils.hpp"
 #include "GLWraps/Mesh.hpp"
 #include "GLWraps/ShaderUtils.hpp"
@@ -11,22 +14,30 @@ namespace GLProject1::GLWraps {
         RGBColor bg_color;
     };
 
+    /// NOTE: Stores a collection of objects to render, basically a "scene".
+    struct Scene {
+        std::vector<Mesh> objects;
+        ScaledRGBColor background;
+    };
+
+    [[nodiscard]] Scene makeScene(std::initializer_list<Mesh> meshes, const ScaledRGBColor& bg);
+
     class Renderer {
     public:
         Renderer() = delete;
-        Renderer(Program&& program, Mesh&& drawable, const RenderConfig& config);
+        Renderer(Scene&& scene, Program&& program, const char* stencil_uniform_name);
 
         bool isReady() const;
-        void renderBackground();
-        void renderThing();
+        void renderScene();
 
     private:
+        Scene m_scene;
         Program m_program;
+        const char* m_fixed_stencil_name;
 
-        /// TODO: create a Scene type storing Meshes and background color data.
-        Mesh m_drawable;
-
-        ScaledRGBColor m_bg_color;
+        const std::vector<Mesh>& getSceneObjects() const;
+        const ScaledRGBColor& getSceneBackground() const;
+        void updateMeshStencil(glw_uniform_handle_t uniform_handle, const ScaledRGBColor& color);
     };
 }
 

@@ -32,8 +32,9 @@ constexpr MyGLConfig app_gl_hints {
 
 constexpr const char* vtx_code = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "uniform mat4 dTransform;\n"
     "void main() {\n"
-    "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "gl_Position = dTransform * vec4(aPos, 1.0f);\n"
     "}\n";
 
 constexpr const char* frag_code = "#version 330 core\n"
@@ -43,27 +44,13 @@ constexpr const char* frag_code = "#version 330 core\n"
     "FragColor = vec4(myColor.xyz, 1.0f);\n"
     "}\n";
 
-/// NOTE: top right square
+/// NOTE: main square
 const GLWraps::MeshData mesh_1 {
     GLWraps::VertexStore {{
-    MyPoint {0.25f, 0.75f, 0.0f},
-    {0.75f, 0.75f, 0.0f},
-    {0.75f, 0.25f, 0.0f},
-    {0.25f, 0.25f, 0.0f}}},
-    /// NOTE: point indexes per primitive (triangles of top left, bottom right)
-    {
-        0, 1, 3,
-        1 ,2 ,3
-    }
-};
-
-/// NOTE: bottom right square
-const GLWraps::MeshData mesh_2 {
-    GLWraps::VertexStore {{
-    MyPoint {-0.5f, -0.25f, 0.0f},
-    {-0.25f, -0.25f, 0.0f},
-    {-0.25f, -0.5f, 0.0f},
-    {-0.5f, -0.5f, 0.0f}}},
+    MyPoint {-0.25f, 0.25f, 0.0f},
+    {0.25f, 0.25f, 0.0f},
+    {0.25f, -0.25f, 0.0f},
+    {-0.25f, -0.25f, 0.0f}}},
     /// NOTE: point indexes per primitive (triangles of top left, bottom right)
     {
         0, 1, 3,
@@ -85,22 +72,15 @@ const GLWraps::ScaledRGBColor color_1 = GLWraps::toScaledRGB({
     80
 });
 
-/// NOTE: neon blue
-const GLWraps::ScaledRGBColor color_2 = GLWraps::toScaledRGB({
-    80,
-    80,
-    255
-});
-
 int main() {
     MyWindow app_window {window_title, window_width, window_height, 1, app_gl_hints};
     MyRenderer app_renderer {
         GLWraps::makeScene({
-            GLWraps::Mesh {mesh_1, color_1},
-            {mesh_2, color_2}
+            GLWraps::Mesh {mesh_1, color_1}
         }, bg_color),
         MyProgram::makeProgram(vtx_code, frag_code),
-        "myColor"
+        "myColor",
+        "dTransform"
     };
 
     if (!app_window.isReady()) {

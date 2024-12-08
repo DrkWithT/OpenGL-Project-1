@@ -26,7 +26,7 @@ namespace GLProject1::GLWraps {
     };
 
     template <UniformDataType Dt, std::size_t N> requires (N <= 4)
-    struct UniformFuncs {
+    struct UniformVecs {
         using item_t = uniformtype_to_native<Dt>::type;
         /// NOTE: There is no variadic unpacking of aggregates, etc. so here's my lazy solution...
 
@@ -95,7 +95,32 @@ namespace GLProject1::GLWraps {
         }
     };
 
-    using RGBUniform = UniformFuncs<UniformDataType::data_float, 3>;
+    template <UniformDataType Dt, std::size_t Side>
+    struct UniformMats {
+        using item_t = uniformtype_to_native<Dt>::type;
+
+        /// NOTE: handles square matrices
+        static void updateData(glw_uniform_handle_t handle, const item_t* data) {
+            if constexpr (std::is_same_v<item_t, float> == false) {
+                return;
+            }
+
+            if constexpr (Side == 3) {
+                glUniformMatrix3fv(handle, 1, GL_FLOAT, data);
+            } else if constexpr (Side == 4) {
+                glUniformMatrix4fv(handle, 1, GL_FLOAT, data);
+            }
+        }
+    };
+
+    /// BRIEF: provides interface for RGB color uniform
+    using RGBUniform = UniformVecs<UniformDataType::data_float, 3>;
+
+    /// BRIEF: provides interface for 3x3 transform matrix uniform
+    using T33Uniform = UniformMats<UniformDataType::data_float, 3>;
+
+    /// BRIEF: provides interface for 4x4 transform matrix uniform
+    using T44Uniform = UniformMats<UniformDataType::data_float, 4>;
 }
 
 #endif

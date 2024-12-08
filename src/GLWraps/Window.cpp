@@ -65,12 +65,23 @@ namespace GLProject1::GLWraps {
         }
 
         while (!glfwWindowShouldClose(m_win_handle)) {
-            /// TODO: add processInput() method!
+            /// NOTE: gets current control key pressed...
+            processInput();
 
-            renderer.renderScene();
+            renderer.renderScene(m_current_key);
 
             glfwSwapBuffers(m_win_handle);
             glfwPollEvents();
+        }
+    }
+
+    void Window::processInput() {
+        if (glfwGetKey(m_win_handle, GLFW_KEY_UP) == GLFW_PRESS) {
+            m_current_key = keycode_t::key_arrow_up;
+        } else if (glfwGetKey(m_win_handle, GLFW_KEY_DOWN) == GLFW_PRESS) {
+            m_current_key = keycode_t::key_arrow_down;
+        } else {
+            m_current_key = keycode_t::key_unknown;
         }
     }
 }

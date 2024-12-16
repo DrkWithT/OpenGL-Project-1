@@ -1,7 +1,7 @@
 /**
  * @file Main.cpp
  * @author DrkWithT
- * @brief Implements main rendering logic.
+ * @brief Implements main rendering logic for a possible colliding block simulator.
  * @version 0.0.1
  * @date 2024-11-29
  * 
@@ -54,7 +54,7 @@ const GLWraps::MeshData mesh_1 {
     /// NOTE: point indexes per primitive (triangles of top left, bottom right)
     {
         0, 1, 3,
-        1 ,2 ,3
+        1 ,2, 3
     }
 };
 

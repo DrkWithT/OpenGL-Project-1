@@ -41,6 +41,11 @@ namespace GLProject1::GLWraps {
         Shader() = delete;
         Shader(const char* src_embed)
         : m_handle {glCreateShader(shadertype_to_glcode<T>::code)}, m_valid_flag {true} {
+            if (!src_embed) {
+                m_valid_flag = false;
+                return;
+            }
+
             glShaderSource(m_handle, 1, &src_embed, nullptr);
             glCompileShader(m_handle);
 
@@ -83,6 +88,7 @@ namespace GLProject1::GLWraps {
         [[nodiscard]] bool isValid() const;
         void useSelf();
 
+        [[nodiscard]] static Program makeProgram();
         [[nodiscard]] static Program makeProgram(const char* vtx_shader_src, const char* frag_shader_src);
         [[nodiscard]] static Program makeProgram(const char* vtx_shader_src, const char* geo_shader_src, const char* frag_shader_src);
     };

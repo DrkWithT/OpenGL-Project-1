@@ -9,11 +9,13 @@
  * 
  */
 
+#include "FileUtils/Reading.hpp"
 #include "GLWraps/ColorUtils.hpp"
 #include "GLWraps/Window.hpp"
 
 using namespace GLProject1;
 
+using MyIOStatus = FileUtils::ReadStatus;
 using MyGLConfig = GLWraps::WindowGLConfig;
 using MyProgram = GLWraps::Program;
 using MyRenderer = GLWraps::Renderer;
@@ -30,19 +32,8 @@ constexpr MyGLConfig app_gl_hints {
     1     // GLFW frame swap interval (1)
 };
 
-constexpr const char* vtx_code = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "uniform mat4 dTransform;\n"
-    "void main() {\n"
-    "gl_Position = dTransform * vec4(aPos, 1.0f);\n"
-    "}\n";
-
-constexpr const char* frag_code = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "uniform vec3 myColor;\n"
-    "void main() {\n"
-    "FragColor = vec4(myColor.xyz, 1.0f);\n"
-    "}\n";
+constexpr const char* vertex_shader_path = "./shaders/vertex_shader.glsl";
+constexpr const char* fragment_shader_path = "./shaders/fragment_shader.glsl";
 
 /// NOTE: main square
 const GLWraps::MeshData mesh_1 {
@@ -72,18 +63,36 @@ const GLWraps::ScaledRGBColor color_1 = GLWraps::toScaledRGB({
     80
 });
 
+[[nodiscard]] MyProgram compileProgramWith(const char* vs_path_cstr, const char* fs_path_cstr) {
+    const auto [vs_src, vs_read_status] = FileUtils::readFileSync(vs_path_cstr);
+
+    if (vs_read_status != MyIOStatus::ok) {
+        FileUtils::reportError(vs_read_status);
+        return MyProgram::makeProgram();
+    }
+
+    const auto [fs_src, fs_read_status] = FileUtils::readFileSync(fs_path_cstr);
+
+    if (fs_read_status != MyIOStatus::ok) {
+        FileUtils::reportError(fs_read_status);
+        return MyProgram::makeProgram();
+    }
+
+    return MyProgram::makeProgram(vs_src.c_str(), fs_src.c_str());
+}
+
 int main() {
     MyWindow app_window {window_title, window_width, window_height, 1, app_gl_hints};
     MyRenderer app_renderer {
         GLWraps::makeScene({
             GLWraps::Mesh {mesh_1, color_1}
         }, bg_color),
-        MyProgram::makeProgram(vtx_code, frag_code),
+        compileProgramWith(vertex_shader_path, fragment_shader_path),
         "myColor",
         "dTransform"
     };
 
-    if (!app_window.isReady()) {
+    if (!app_window.isReady() || !app_renderer.isReady()) {
         return -1;
     }
 

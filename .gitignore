@@ -5,9 +5,10 @@
 build/
 lib/
 
-src/Includes/GLAD3/
-src/Includes/GLFW3/
-src/Includes/KHR/
+src/Includes/GLAD3
+src/Includes/GLFW3
+src/Includes/KHR
+src/Includes/GLM
 src/Externals/
 
 CMakeUserPresets.json

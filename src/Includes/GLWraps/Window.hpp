@@ -1,6 +1,7 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
+#include "AppCtrl/KeyData.hpp"
 #include "GLWraps/Renderer.hpp"
 #include "GLFW3/glfw3.h"
 
@@ -15,6 +16,8 @@ namespace GLProject1::GLWraps {
 
     class Window {
     public:
+        using keycode_t = AppCtrl::KeyCode;
+
         Window() noexcept;
         Window(const char* title, int width, int height, int swap_interval, WindowGLConfig gl_ctx_hints);
 
@@ -30,11 +33,12 @@ namespace GLProject1::GLWraps {
 
         void displayScene(Renderer& renderer);
 
-        // void displayScene(Renderer& renderer);
-
     private:
         GLFWwindow* m_win_handle;
+        keycode_t m_current_key;
         bool m_ready_flag;
+
+        void processInput();
     };
 }
 

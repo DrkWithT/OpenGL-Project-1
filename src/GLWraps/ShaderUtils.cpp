@@ -58,6 +58,10 @@ namespace GLProject1::GLWraps {
 
     void Program::useSelf() { glUseProgram(m_handle); }
 
+    Program Program::makeProgram() {
+        return {};
+    }
+
     Program Program::makeProgram(const char* vtx_shader_src, const char* frag_shader_src) {
         VertexShader vshader {vtx_shader_src};
         FragmentShader fshader {frag_shader_src};

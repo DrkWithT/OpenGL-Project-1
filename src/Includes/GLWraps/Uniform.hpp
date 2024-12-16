@@ -106,9 +106,9 @@ namespace GLProject1::GLWraps {
             }
 
             if constexpr (Side == 3) {
-                glUniformMatrix3fv(handle, 1, GL_FLOAT, data);
+                glUniformMatrix3fv(handle, 1, GL_FALSE, data);
             } else if constexpr (Side == 4) {
-                glUniformMatrix4fv(handle, 1, GL_FLOAT, data);
+                glUniformMatrix4fv(handle, 1, GL_FALSE, data);
             }
         }
     };

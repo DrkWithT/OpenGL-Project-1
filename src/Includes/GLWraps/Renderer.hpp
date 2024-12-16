@@ -35,7 +35,7 @@ namespace GLProject1::GLWraps {
         const char* m_fixed_stencil_name;
         const char* m_transform_name;
 
-        const std::vector<Mesh>& getSceneObjects() const;
+        std::vector<Mesh>& getSceneObjects();
         const ScaledRGBColor& getSceneBackground() const;
         void updateMeshStencil(glw_uniform_handle_t uniform_handle, const ScaledRGBColor& color);
         void updateMeshDisplacement(glw_uniform_handle_t uniform_handle, const float* transform_data);

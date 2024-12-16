@@ -38,24 +38,26 @@ namespace GLProject1::GLWraps {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // for (const auto& mesh : getSceneObjects()) {
-        const auto& one_mesh = getSceneObjects()[0];
+        auto& one_mesh = getSceneObjects()[0];
 
-        const glw_uniform_handle_t updated_uniform = glGetUniformLocation(m_program.getHandle(), m_fixed_stencil_name);
+        const glw_uniform_handle_t updated_stencil = glGetUniformLocation(m_program.getHandle(), m_fixed_stencil_name);
         const glw_uniform_handle_t updated_displace = glGetUniformLocation(m_program.getHandle(), m_transform_name);
 
         m_program.useSelf();
 
-        updateMeshStencil(updated_uniform, one_mesh.getColor());
+        updateMeshStencil(updated_stencil, one_mesh.getColor());
 
-        glm::mat4 my_transform {1.0f};
+        glm::mat4 mesh_transform {1.0f};
 
         if (key == MyKey::key_arrow_up) {
-            my_transform = glm::translate(my_transform, glm::vec3 {0.0f, 0.125f, 0.0f});
+            one_mesh.moveUp();
         } else if (key == MyKey::key_arrow_down) {
-            my_transform = glm::translate(my_transform, glm::vec3 {0.0f, -0.125f, 0.0f});
+            one_mesh.moveDown();
         }
 
-        updateMeshDisplacement(updated_displace, glm::value_ptr(my_transform));
+        mesh_transform = glm::translate(mesh_transform, one_mesh.getTranslation());
+
+        updateMeshDisplacement(updated_displace, glm::value_ptr(mesh_transform));
 
         one_mesh.getVAO().bindSelf();
         glDrawElements(GL_TRIANGLES, one_mesh.getVAO().getIndexCount(), GL_UNSIGNED_INT, 0);
@@ -63,7 +65,7 @@ namespace GLProject1::GLWraps {
         // }
     }
 
-    const std::vector<Mesh>& Renderer::getSceneObjects() const { return m_scene.objects; }
+    std::vector<Mesh>& Renderer::getSceneObjects() { return m_scene.objects; }
 
     const ScaledRGBColor& Renderer::getSceneBackground() const { return m_scene.background; }
 
@@ -73,7 +75,7 @@ namespace GLProject1::GLWraps {
         RGBUniform::updateData(uniform_handle, red, green, blue);
     }
 
-    void updateMeshDisplacement(glw_uniform_handle_t uniform_handle, const float* transform_data) {
+    void Renderer::updateMeshDisplacement(glw_uniform_handle_t uniform_handle, const float* transform_data) {
         T44Uniform::updateData(uniform_handle, transform_data);
     }
 }

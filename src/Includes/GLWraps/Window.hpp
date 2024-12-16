@@ -19,7 +19,7 @@ namespace GLProject1::GLWraps {
         using keycode_t = AppCtrl::KeyCode;
 
         Window() noexcept;
-        Window(const char* title, int width, int height, int swap_interval, WindowGLConfig gl_ctx_hints);
+        Window(const char* title, int width, int height, WindowGLConfig gl_ctx_hints);
 
         ~Window();
 

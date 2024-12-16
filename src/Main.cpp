@@ -82,7 +82,7 @@ const GLWraps::ScaledRGBColor color_1 = GLWraps::toScaledRGB({
 }
 
 int main() {
-    MyWindow app_window {window_title, window_width, window_height, 1, app_gl_hints};
+    MyWindow app_window {window_title, window_width, window_height, app_gl_hints};
     MyRenderer app_renderer {
         GLWraps::makeScene({
             GLWraps::Mesh {mesh_1, color_1}

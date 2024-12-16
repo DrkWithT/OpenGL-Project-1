@@ -61,7 +61,7 @@ namespace GLProject1::GLWraps {
         glBufferData(GL_ARRAY_BUFFER, vertex_data.getDataSize(), vertex_data.viewData(), GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo_handle);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glw_handle_t) * index_data.size(), index_data.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned long) * index_data.size(), index_data.data(), GL_STATIC_DRAW);
         m_ebo_index_n = static_cast<int>(index_data.size());
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, point_dim * sizeof(float), (void *)0);

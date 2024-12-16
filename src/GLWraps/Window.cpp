@@ -22,7 +22,7 @@ namespace GLProject1::GLWraps {
     Window::Window() noexcept
     : m_win_handle {nullptr} {}
 
-    Window::Window(const char* title, int width, int height, int swap_interval, WindowGLConfig gl_ctx_hints)
+    Window::Window(const char* title, int width, int height, WindowGLConfig gl_ctx_hints)
     : m_win_handle {nullptr}, m_ready_flag {true} {
         const auto [gl_major, gl_minor, gl_swap_interval] = gl_ctx_hints;
 
@@ -30,6 +30,7 @@ namespace GLProject1::GLWraps {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, gl_major);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, gl_minor);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         m_win_handle = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
@@ -47,9 +48,11 @@ namespace GLProject1::GLWraps {
             return;
         }
 
-        glViewport(0, 0, width, height);
         glfwSetFramebufferSizeCallback(m_win_handle, handleWindowResize);
-        glfwSwapInterval(swap_interval); // for vsync
+        glfwSwapInterval(gl_swap_interval); // for vsync
+
+        glfwGetFramebufferSize(m_win_handle, &width, &height);
+        glViewport(0, 0, width, height);
     }
 
     Window::~Window() {
@@ -70,8 +73,8 @@ namespace GLProject1::GLWraps {
 
             renderer.renderScene(m_current_key);
 
-            glfwSwapBuffers(m_win_handle);
             glfwPollEvents();
+            glfwSwapBuffers(m_win_handle);
         }
     }
 

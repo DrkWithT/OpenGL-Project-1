@@ -1,7 +1,7 @@
 /**
  * @file Main.cpp
  * @author DrkWithT
- * @brief Implements main rendering logic for a possible colliding block simulator.
+ * @brief Implements driver logic for my tile maze game.
  * @version 0.0.1
  * @date 2024-11-29
  * 
@@ -9,20 +9,21 @@
  * 
  */
 
+#include <utility>
 #include "FileUtils/Reading.hpp"
 #include "GLWraps/ColorUtils.hpp"
 #include "GLWraps/Window.hpp"
+#include "Game/Game.hpp"
 
 using namespace GLProject1;
 
 using MyIOStatus = FileUtils::ReadStatus;
 using MyGLConfig = GLWraps::WindowGLConfig;
 using MyProgram = GLWraps::Program;
-using MyRenderer = GLWraps::Renderer;
 using MyWindow = GLWraps::Window;
 using MyPoint = GLWraps::PositionVertex;
 
-constexpr const char* window_title = "Project 1";
+constexpr const char* window_title = "Maze Demo";
 constexpr int window_width = 480;
 constexpr int window_height = 480;
 
@@ -35,32 +36,46 @@ constexpr MyGLConfig app_gl_hints {
 constexpr const char* vertex_shader_path = "./shaders/vertex_shader.glsl";
 constexpr const char* fragment_shader_path = "./shaders/fragment_shader.glsl";
 
-/// NOTE: main square
+/// NOTE: contains 2d tile geometry
 const GLWraps::MeshData mesh_1 {
     GLWraps::VertexStore {{
-    MyPoint {-0.25f, 0.25f, 0.0f},
-    {0.25f, 0.25f, 0.0f},
-    {0.25f, -0.25f, 0.0f},
-    {-0.25f, -0.25f, 0.0f}}},
-    /// NOTE: point indexes per primitive (triangles of top left, bottom right)
+    MyPoint {0.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f}}},
+    /// NOTE: point indexes per primitive (top left, bottom right triangles)
     {
         0, 1, 3,
         1 ,2, 3
     }
 };
 
-/// NOTE: color is dark gray
+/// NOTE: air is white
 const GLWraps::ScaledRGBColor bg_color = GLWraps::toScaledRGB({
+    255,
+    255,
+    255
+});
+
+/// NOTE: tiles are dark gray
+const GLWraps::ScaledRGBColor wall_color = GLWraps::toScaledRGB({
     120,
     120,
     120
 });
 
-/// NOTE: pastel orange
-const GLWraps::ScaledRGBColor color_1 = GLWraps::toScaledRGB({
+/// NOTE: player is pastel orange
+const GLWraps::ScaledRGBColor player_color = GLWraps::toScaledRGB({
     255,
     180,
     80
+});
+
+/// NOTE: goal is reddish
+const GLWraps::ScaledRGBColor goal_color = GLWraps::toScaledRGB({
+    240,
+    100,
+    100
 });
 
 [[nodiscard]] MyProgram compileProgramWith(const char* vs_path_cstr, const char* fs_path_cstr) {
@@ -82,19 +97,34 @@ const GLWraps::ScaledRGBColor color_1 = GLWraps::toScaledRGB({
 }
 
 int main() {
-    MyWindow app_window {window_title, window_width, window_height, app_gl_hints};
-    MyRenderer app_renderer {
-        GLWraps::makeScene({
-            GLWraps::Mesh {mesh_1, color_1}
-        }, bg_color),
-        compileProgramWith(vertex_shader_path, fragment_shader_path),
-        "myColor",
-        "dTransform"
+    std::vector<std::vector<int>> demo_data = {
+        {1,1, 1, 1, 1},
+        {1, 2, 1, 3, 1},
+        {1, 0, 1, 0, 1},
+        {1, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1},
     };
 
-    if (!app_window.isReady() || !app_renderer.isReady()) {
+    MyWindow app_window {window_title, window_width, window_height, app_gl_hints};
+    Game::Game game_state {
+        Game::ColorSettings {
+            .background = bg_color,
+            .wall = wall_color,
+            .player = player_color,
+            .goal = goal_color
+        },
+        Game::Board {
+            std::move(demo_data),
+            Game::BoardPair {1, 1},
+            Game::BoardPair {1, 3},
+        },
+        GLWraps::VAO {mesh_1},
+        compileProgramWith(vertex_shader_path, fragment_shader_path)
+    };
+
+    if (!app_window.isReady()) {
         return -1;
     }
 
-    app_window.displayScene(app_renderer);
+    app_window.displayGame(game_state);
 }

@@ -12,4 +12,4 @@ An ongoing OpenGL 3.3 & GLFW 3.3 demo using modern C++ and CMake. This may becom
  4. Run `project.sh d` for debug build to get started. The executable should be at `./build/src/glproject1`.
 
 ### To-Do's
- 1. Add support for uniforms to allow mesh movement.
+ 4. Refactor Window class to debounce key input, specifically by the bottom note... Must use

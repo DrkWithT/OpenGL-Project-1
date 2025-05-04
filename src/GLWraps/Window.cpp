@@ -20,10 +20,10 @@ namespace GLProject1::GLWraps {
     }
 
     Window::Window() noexcept
-    : m_win_handle {nullptr} {}
+    : m_win_handle {nullptr}, m_current_key {}, m_ready_flag {false}, m_running {false} {}
 
     Window::Window(const char* title, int width, int height, WindowGLConfig gl_ctx_hints)
-    : m_win_handle {nullptr}, m_ready_flag {true} {
+    : m_win_handle {nullptr}, m_current_key {}, m_ready_flag {true}, m_running {false} {
         const auto [gl_major, gl_minor, gl_swap_interval] = gl_ctx_hints;
 
         glfwInit();
@@ -61,17 +61,24 @@ namespace GLProject1::GLWraps {
 
     bool Window::isReady() const { return m_ready_flag; }
 
-    void Window::displayScene(Renderer& renderer) {
+    void Window::displayGame(Game::Game& game_state) {
         /// @note Guard clause here must trigger when the GL program build failed earlier, so I cannot draw well if that case applies.
-        if (!renderer.isReady()) {
+        if (!isReady() || m_running) {
             return;
         }
 
-        while (!glfwWindowShouldClose(m_win_handle)) {
-            /// NOTE: gets current control key pressed...
+        m_running = true;
+        auto game_won = false;
+
+        while (!glfwWindowShouldClose(m_win_handle) && !game_won) {
+            /// NOTE: gets user's keyboard inputs to move their player...
             processInput();
 
-            renderer.renderScene(m_current_key);
+            int current_win_width = 0;
+            int current_win_height = 0;
+            glfwGetFramebufferSize(m_win_handle, &current_win_width, &current_win_height);
+
+            game_won = game_state.processInput(m_current_key, static_cast<float>(current_win_width), static_cast<float>(current_win_height));
 
             glfwPollEvents();
             glfwSwapBuffers(m_win_handle);
@@ -83,6 +90,10 @@ namespace GLProject1::GLWraps {
             m_current_key = keycode_t::key_arrow_up;
         } else if (glfwGetKey(m_win_handle, GLFW_KEY_DOWN) == GLFW_PRESS) {
             m_current_key = keycode_t::key_arrow_down;
+        } else if (glfwGetKey(m_win_handle, GLFW_KEY_LEFT)) {
+            m_current_key = keycode_t::key_arrow_left;
+        } else if (glfwGetKey(m_win_handle, GLFW_KEY_RIGHT)) {
+            m_current_key = keycode_t::key_arrow_right;
         } else {
             m_current_key = keycode_t::key_unknown;
         }

@@ -2,7 +2,7 @@
 #define WINDOW_HPP
 
 #include "AppCtrl/KeyData.hpp"
-#include "GLWraps/Renderer.hpp"
+#include "Game/Game.hpp"
 #include "GLFW3/glfw3.h"
 
 namespace GLProject1::GLWraps {
@@ -31,13 +31,15 @@ namespace GLProject1::GLWraps {
 
         [[nodiscard]] bool isReady() const;
 
-        void displayScene(Renderer& renderer);
+        void displayGame(Game::Game& game_state);
 
     private:
         GLFWwindow* m_win_handle;
         keycode_t m_current_key;
         bool m_ready_flag;
+        bool m_running;
 
+        /// NOTE: use a background thread at startup to belatedly timeout the key debounce for each submitted key-press...
         void processInput();
     };
 }

@@ -3,6 +3,12 @@
 
 namespace GLProject1::GLWraps {
     template <typename T>
+    struct Pair {
+        T m1;
+        T m2;
+    };
+
+    template <typename T>
     struct Triple {
         T m1;
         T m2;

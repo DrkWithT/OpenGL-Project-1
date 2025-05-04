@@ -25,26 +25,27 @@ namespace GLProject1::GLWraps {
         using type = float;
     };
 
-    template <UniformDataType Dt, std::size_t N> requires (N <= 4)
-    struct UniformVecs {
+    template <UniformDataType Dt>
+    struct UniformScalars {
         using item_t = uniformtype_to_native<Dt>::type;
-        /// NOTE: There is no variadic unpacking of aggregates, etc. so here's my lazy solution...
 
-        /// @brief Updates the uniform if 1 valued by that of a native type.
+        /// @brief Updates the uniform of a single value of some native type.
         template <typename Nt> requires (std::is_same_v<Nt, item_t>)
         static void updateData(glw_uniform_handle_t handle, Nt v0) {
-            if constexpr (N != 1) {
-                return;
-            }
-
             if constexpr (std::is_same_v<Nt, int>) {
                 glUniform1i(handle, v0);
             } else if constexpr (std::is_same_v<Nt, unsigned int>) {
-                glUniform1u(handle, v0);
+                glUniform1ui(handle, v0);
             } else if constexpr (std::is_same_v<Nt, float>) {
                 glUniform1f(handle, v0);
             }
         }
+    };
+
+    template <UniformDataType Dt, std::size_t N> requires (N <= 4)
+    struct UniformVecs {
+        using item_t = uniformtype_to_native<Dt>::type;
+        /// NOTE: There is no variadic unpacking of aggregates, etc. so here's my lazy solution...
 
         /// @brief Updates the uniform if 2 valued by that of a native type.
         template <typename Nt> requires (std::is_same_v<Nt, item_t>)
@@ -112,6 +113,9 @@ namespace GLProject1::GLWraps {
             }
         }
     };
+
+    /// BRIEF: provides interface for float scalar uniform
+    using FloatUniform = UniformScalars<UniformDataType::data_float>;
 
     /// BRIEF: provides interface for RGB color uniform
     using RGBUniform = UniformVecs<UniformDataType::data_float, 3>;

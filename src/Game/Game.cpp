@@ -79,9 +79,9 @@ namespace GLProject1::Game {
     }
 
     Game::Game(ColorSettings settings, Board&& level, GLWraps::VAO&& tile_model, GLWraps::Program&& shader_program)
-    : m_level {level}, m_renderer {settings, std::forward<GLWraps::Program&&>(shader_program), std::forward<GLWraps::VAO&&>(tile_model), stencil_uid, shrink_wd_uid, shrink_hd_uid, place_tile_uid} {}
+    : m_level {level}, m_renderer {settings, std::forward<GLWraps::Program&&>(shader_program), std::forward<GLWraps::VAO&&>(tile_model), stencil_uid, shrink_wd_uid, shrink_hd_uid, place_tile_uid}, m_passed {false} {}
 
-    [[nodiscard]] bool Game::processInput(AppCtrl::KeyCode key, float window_width, float window_height) {
+    void Game::processInput(AppCtrl::KeyCode key) {
         // 1. decode key (U, D, L, R) -> movement id
         const auto key_dir = static_cast<int>(key);
         const BoardMove given_move = BoardMove {key_dir};
@@ -89,10 +89,12 @@ namespace GLProject1::Game {
         // 2. attempt given movement
         m_level.tryMove(given_move);
 
-        // 3. redraw board for user
-        m_renderer.drawBoard(m_level, window_width, window_height);
-
         // 3. check for maze completion
-        return m_level.isSolved();
+        m_passed = m_level.isSolved();
+    }
+
+    void Game::display(float window_width, float window_height) {
+        // 4. redraw board for user
+        m_renderer.drawBoard(m_level, window_width, window_height);
     }
 }

@@ -15,15 +15,26 @@
 #include "GLWraps/Window.hpp"
 
 namespace GLProject1::GLWraps {
-    void handleWindowResize([[maybe_unused]] GLFWwindow* raw_window, int new_width, int new_height) {
-        glViewport(0, 0, new_width, new_height);
+    ServiceRefs::ServiceRefs(Game::Game* game_state_ptr, Window* window_ptr) noexcept
+    : m_game_state_ptr {game_state_ptr}, m_window_ptr {window_ptr}, m_ready {m_game_state_ptr != nullptr && m_window_ptr != nullptr} {}
+
+    Game::Game* ServiceRefs::refGameState() noexcept {
+        return m_game_state_ptr;
+    }
+
+    Window* ServiceRefs::refWindow() noexcept {
+        return m_window_ptr;
+    }
+
+    ServiceRefs::operator bool() const noexcept {
+        return m_ready;
     }
 
     Window::Window() noexcept
     : m_win_handle {nullptr}, m_current_key {}, m_ready_flag {false}, m_running {false} {}
 
     Window::Window(const char* title, int width, int height, WindowGLConfig gl_ctx_hints)
-    : m_win_handle {nullptr}, m_current_key {}, m_ready_flag {true}, m_running {false} {
+    : m_win_handle {nullptr}, m_current_key {}, m_window_width {width}, m_window_height {height}, m_ready_flag {true}, m_running {false} {
         const auto [gl_major, gl_minor, gl_swap_interval] = gl_ctx_hints;
 
         glfwInit();
@@ -48,11 +59,10 @@ namespace GLProject1::GLWraps {
             return;
         }
 
-        glfwSetFramebufferSizeCallback(m_win_handle, handleWindowResize);
         glfwSwapInterval(gl_swap_interval); // for vsync
 
         glfwGetFramebufferSize(m_win_handle, &width, &height);
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, m_window_width, m_window_height);
     }
 
     Window::~Window() {
@@ -60,6 +70,12 @@ namespace GLProject1::GLWraps {
     }
 
     bool Window::isReady() const { return m_ready_flag; }
+
+    void Window::setViewingDims(int width, int height) noexcept {
+        m_window_width = width;
+        m_window_height = height;
+        glViewport(0, 0, m_window_width, m_window_height);
+    }
 
     void Window::displayGame(Game::Game& game_state) {
         /// @note Guard clause here must trigger when the GL program build failed earlier, so I cannot draw well if that case applies.
@@ -71,31 +87,33 @@ namespace GLProject1::GLWraps {
         auto game_won = false;
 
         while (!glfwWindowShouldClose(m_win_handle) && !game_won) {
-            /// NOTE: gets user's keyboard inputs to move their player...
-            processInput();
-
-            int current_win_width = 0;
-            int current_win_height = 0;
-            glfwGetFramebufferSize(m_win_handle, &current_win_width, &current_win_height);
-
-            game_won = game_state.processInput(m_current_key, static_cast<float>(current_win_width), static_cast<float>(current_win_height));
+            game_state.display(static_cast<float>(m_window_width), static_cast<float>(m_window_width));
+            game_won = game_state.isPassed();
 
             glfwPollEvents();
             glfwSwapBuffers(m_win_handle);
         }
     }
 
-    void Window::processInput() {
-        if (glfwGetKey(m_win_handle, GLFW_KEY_UP) == GLFW_PRESS) {
-            m_current_key = keycode_t::key_arrow_up;
-        } else if (glfwGetKey(m_win_handle, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            m_current_key = keycode_t::key_arrow_down;
-        } else if (glfwGetKey(m_win_handle, GLFW_KEY_LEFT)) {
-            m_current_key = keycode_t::key_arrow_left;
-        } else if (glfwGetKey(m_win_handle, GLFW_KEY_RIGHT)) {
-            m_current_key = keycode_t::key_arrow_right;
-        } else {
-            m_current_key = keycode_t::key_unknown;
-        }
+    void Window::setResizeCallback(resize_func_ptr on_resize) noexcept {
+        glfwSetFramebufferSizeCallback(m_win_handle, on_resize);
     }
+
+    void Window::setKeyCallback(key_func_ptr on_key) noexcept {
+        glfwSetKeyCallback(m_win_handle, on_key);
+    }
+
+    // void Window::processInput() {
+    //     if (glfwGetKey(m_win_handle, GLFW_KEY_UP) == GLFW_PRESS) {
+    //         m_current_key = keycode_t::key_arrow_up;
+    //     } else if (glfwGetKey(m_win_handle, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    //         m_current_key = keycode_t::key_arrow_down;
+    //     } else if (glfwGetKey(m_win_handle, GLFW_KEY_LEFT)) {
+    //         m_current_key = keycode_t::key_arrow_left;
+    //     } else if (glfwGetKey(m_win_handle, GLFW_KEY_RIGHT)) {
+    //         m_current_key = keycode_t::key_arrow_right;
+    //     } else {
+    //         m_current_key = keycode_t::key_unknown;
+    //     }
+    // }
 }

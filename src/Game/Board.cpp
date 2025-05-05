@@ -52,8 +52,12 @@ namespace GLProject1::Game {
     void Board::tryMove(BoardMove move) {
         const auto [row_move, col_move] = validateMove(move);
 
+        m_data[m_player_row][m_player_col] = TileCode::air;
+
         m_player_row += row_move;
         m_player_col += col_move;
+
+        m_data[m_player_row][m_player_col] = TileCode::player;
     }
 
     bool Board::isSolved() const noexcept {

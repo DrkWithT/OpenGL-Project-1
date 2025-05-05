@@ -43,11 +43,16 @@ namespace GLProject1::Game {
         Game(ColorSettings settings, Board&& level, GLWraps::VAO&& tile_model, GLWraps::Program&& shader_program);
 
         /// NOTE: returns true / false for level-passing status!
-        [[nodiscard]] bool processInput(AppCtrl::KeyCode key, float window_width, float window_height);
+        void processInput(AppCtrl::KeyCode key);
+
+        void display(float window_width, float window_height);
+
+        [[nodiscard]] bool isPassed() const noexcept;
 
     private:
         /// TODO: support multiple level progression!
         Board m_level;
         TileRenderer m_renderer;
+        bool m_passed;
     };
 }

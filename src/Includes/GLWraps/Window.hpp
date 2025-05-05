@@ -12,11 +12,31 @@ namespace GLProject1::GLWraps {
         int swap_interval;
     };
 
-    void handleWindowResize([[maybe_unused]] GLFWwindow* raw_window, int new_width, int new_height);
+    class Window;
+
+    /**
+     * @brief Contains reference pointers to Game & Window states for callback function usage.
+     */
+    class ServiceRefs {
+    public:
+        explicit ServiceRefs(Game::Game* game_state_ptr, Window* window_ptr) noexcept;
+        [[nodiscard]] Game::Game* refGameState() noexcept;
+        [[nodiscard]] Window* refWindow() noexcept;
+        explicit operator bool() const noexcept;
+
+    private:
+        Game::Game* m_game_state_ptr;
+        Window* m_window_ptr;
+        bool m_ready;
+    };
 
     class Window {
     public:
         using keycode_t = AppCtrl::KeyCode;
+        using resize_func_t = void(GLFWwindow*, int, int);
+        using resize_func_ptr = resize_func_t*;
+        using key_func_t = void(GLFWwindow*, int, int, int, int);
+        using key_func_ptr = key_func_t*;
 
         Window() noexcept;
         Window(const char* title, int width, int height, WindowGLConfig gl_ctx_hints);
@@ -31,16 +51,20 @@ namespace GLProject1::GLWraps {
 
         [[nodiscard]] bool isReady() const;
 
+        void setViewingDims(int width, int height) noexcept;
+
         void displayGame(Game::Game& game_state);
+
+        void setResizeCallback(resize_func_ptr on_resize) noexcept;
+        void setKeyCallback(key_func_ptr on_key) noexcept;
 
     private:
         GLFWwindow* m_win_handle;
         keycode_t m_current_key;
+        int m_window_width;
+        int m_window_height;
         bool m_ready_flag;
         bool m_running;
-
-        /// NOTE: use a background thread at startup to belatedly timeout the key debounce for each submitted key-press...
-        void processInput();
     };
 }
 

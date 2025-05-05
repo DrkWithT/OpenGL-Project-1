@@ -22,6 +22,7 @@ using MyGLConfig = GLWraps::WindowGLConfig;
 using MyProgram = GLWraps::Program;
 using MyWindow = GLWraps::Window;
 using MyPoint = GLWraps::PositionVertex;
+using MyCallbackRefs = GLWraps::ServiceRefs;
 
 constexpr const char* window_title = "Maze Demo";
 constexpr int window_width = 480;
@@ -78,6 +79,10 @@ const GLWraps::ScaledRGBColor goal_color = GLWraps::toScaledRGB({
     100
 });
 
+
+/// NOTE: Only set the global reference holder to an instance referencing a local Window & Game in main()!! This is a workaround to make GLFW callbacks play nicer with Game & Window wrappers.
+static GLWraps::ServiceRefs* refs = nullptr;
+
 [[nodiscard]] MyProgram compileProgramWith(const char* vs_path_cstr, const char* fs_path_cstr) {
     const auto [vs_src, vs_read_status] = FileUtils::readFileSync(vs_path_cstr);
 
@@ -96,9 +101,32 @@ const GLWraps::ScaledRGBColor goal_color = GLWraps::toScaledRGB({
     return MyProgram::makeProgram(vs_src.c_str(), fs_src.c_str());
 }
 
+void onWindowResize([[maybe_unused]] GLFWwindow* window_ptr, int width, int height) {
+    refs->refWindow()->setViewingDims(width, height);
+}
+
+void onKeyPress([[maybe_unused]] GLFWwindow* window_ptr, int keycode, [[maybe_unused]] int scancode, [[maybe_unused]] int action, [[maybe_unused]] int modifiers) {
+    switch (keycode) {
+    case GLFW_KEY_UP:
+        refs->refGameState()->processInput(AppCtrl::KeyCode::key_arrow_up);
+        break;
+    case GLFW_KEY_DOWN:
+        refs->refGameState()->processInput(AppCtrl::KeyCode::key_arrow_down);
+        break;
+    case GLFW_KEY_LEFT:
+        refs->refGameState()->processInput(AppCtrl::KeyCode::key_arrow_left);
+        break;
+    case GLFW_KEY_RIGHT:
+        refs->refGameState()->processInput(AppCtrl::KeyCode::key_arrow_right);
+        break;
+    default:
+        break;
+    }
+}
+
 int main() {
     std::vector<std::vector<int>> demo_data = {
-        {1,1, 1, 1, 1},
+        {1, 1, 1, 1, 1},
         {1, 2, 1, 3, 1},
         {1, 0, 1, 0, 1},
         {1, 0, 0, 0, 1},
@@ -121,6 +149,9 @@ int main() {
         GLWraps::VAO {mesh_1},
         compileProgramWith(vertex_shader_path, fragment_shader_path)
     };
+
+    MyCallbackRefs callback_utility_refs {&game_state, &app_window};
+    refs = &callback_utility_refs;
 
     if (!app_window.isReady()) {
         return -1;

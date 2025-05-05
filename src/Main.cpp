@@ -105,7 +105,11 @@ void onWindowResize([[maybe_unused]] GLFWwindow* window_ptr, int width, int heig
     refs->refWindow()->setViewingDims(width, height);
 }
 
-void onKeyPress([[maybe_unused]] GLFWwindow* window_ptr, int keycode, [[maybe_unused]] int scancode, [[maybe_unused]] int action, [[maybe_unused]] int modifiers) {
+void onKeyPress([[maybe_unused]] GLFWwindow* window_ptr, int keycode, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int modifiers) {
+    if (action != GLFW_PRESS) {
+        return;
+    }
+
     switch (keycode) {
     case GLFW_KEY_UP:
         refs->refGameState()->processInput(AppCtrl::KeyCode::key_arrow_up);

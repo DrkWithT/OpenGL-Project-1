@@ -31,10 +31,10 @@ namespace GLProject1::GLWraps {
     }
 
     Window::Window() noexcept
-    : m_win_handle {nullptr}, m_current_key {}, m_ready_flag {false}, m_running {false} {}
+    : m_win_handle {nullptr}, m_ready_flag {false}, m_running {false} {}
 
     Window::Window(const char* title, int width, int height, WindowGLConfig gl_ctx_hints)
-    : m_win_handle {nullptr}, m_current_key {}, m_window_width {width}, m_window_height {height}, m_ready_flag {true}, m_running {false} {
+    : m_win_handle {nullptr}, m_window_width {width}, m_window_height {height}, m_ready_flag {true}, m_running {false} {
         const auto [gl_major, gl_minor, gl_swap_interval] = gl_ctx_hints;
 
         glfwInit();
@@ -87,7 +87,7 @@ namespace GLProject1::GLWraps {
         auto game_won = false;
 
         while (!glfwWindowShouldClose(m_win_handle) && !game_won) {
-            game_state.display(static_cast<float>(m_window_width), static_cast<float>(m_window_width));
+            game_state.display(static_cast<float>(m_window_width), static_cast<float>(m_window_height));
             game_won = game_state.isPassed();
 
             glfwPollEvents();
@@ -95,25 +95,23 @@ namespace GLProject1::GLWraps {
         }
     }
 
-    void Window::setResizeCallback(resize_func_ptr on_resize) noexcept {
+    bool Window::setResizeCallback(resize_func_ptr on_resize) noexcept {
+        if (!m_win_handle || !on_resize) {
+            return false;
+        }
+
         glfwSetFramebufferSizeCallback(m_win_handle, on_resize);
+
+        return true;
     }
 
-    void Window::setKeyCallback(key_func_ptr on_key) noexcept {
+    bool Window::setKeyCallback(key_func_ptr on_key) noexcept {
+        if (!m_win_handle || !on_key) {
+            return false;
+        }
+
         glfwSetKeyCallback(m_win_handle, on_key);
-    }
 
-    // void Window::processInput() {
-    //     if (glfwGetKey(m_win_handle, GLFW_KEY_UP) == GLFW_PRESS) {
-    //         m_current_key = keycode_t::key_arrow_up;
-    //     } else if (glfwGetKey(m_win_handle, GLFW_KEY_DOWN) == GLFW_PRESS) {
-    //         m_current_key = keycode_t::key_arrow_down;
-    //     } else if (glfwGetKey(m_win_handle, GLFW_KEY_LEFT)) {
-    //         m_current_key = keycode_t::key_arrow_left;
-    //     } else if (glfwGetKey(m_win_handle, GLFW_KEY_RIGHT)) {
-    //         m_current_key = keycode_t::key_arrow_right;
-    //     } else {
-    //         m_current_key = keycode_t::key_unknown;
-    //     }
-    // }
+        return true;
+    }
 }

@@ -35,7 +35,7 @@ namespace GLProject1::Game {
     }
 
     Board::Board(std::vector<std::vector<int>>&& data, BoardPair player_pos, BoardPair goal_pos)
-    : m_data {data}, m_rows (m_data.size()), m_cols (m_data[0].size()), m_player_row {player_pos.row}, m_player_col {player_pos.col}, m_goal_row {goal_pos.row}, m_goal_col {goal_pos.col} {}
+    : m_data {std::move(data)}, m_rows (m_data.size()), m_cols (m_data[0].size()), m_player_row {player_pos.row}, m_player_col {player_pos.col}, m_goal_row {goal_pos.row}, m_goal_col {goal_pos.col} {}
 
     int Board::getRowCount() const noexcept {
         return m_rows;

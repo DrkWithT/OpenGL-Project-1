@@ -42,8 +42,8 @@ const GLWraps::MeshData mesh_1 {
     GLWraps::VertexStore {{
     MyPoint {0.0f, 0.0f, 0.0f},
     {1.0f, 0.0f, 0.0f},
-    {1.0f, -1.0f, 0.0f},
-    {0.0f, -1.0f, 0.0f}}},
+    {1.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f}}},
     /// NOTE: point indexes per primitive (top left, bottom right triangles)
     {
         0, 1, 3,
@@ -130,7 +130,7 @@ void onKeyPress([[maybe_unused]] GLFWwindow* window_ptr, int keycode, [[maybe_un
 
 int main() {
     std::vector<std::vector<int>> demo_data = {
-        {1, 1, 1, 1, 1},
+        std::vector {1, 1, 1, 1, 1},
         {1, 2, 1, 3, 1},
         {1, 0, 1, 0, 1},
         {1, 0, 0, 0, 1},
@@ -151,14 +151,26 @@ int main() {
             Game::BoardPair {1, 3},
         },
         GLWraps::VAO {mesh_1},
-        compileProgramWith(vertex_shader_path, fragment_shader_path)
+        compileProgramWith(vertex_shader_path, fragment_shader_path),
+        Game::UniformNames {
+            "myColor",
+            "originTransform", // projection mat4: NDC -> "canvas-origin" 2-D system
+            "shrinkTransform",
+            "placeTransform"
+        }
     };
 
     MyCallbackRefs callback_utility_refs {&game_state, &app_window};
     refs = &callback_utility_refs;
 
     if (!app_window.isReady()) {
-        return -1;
+        std::cerr << "Invalid setup for window!\n";
+        return 1;
+    }
+
+    if (!app_window.setResizeCallback(onWindowResize) || !app_window.setKeyCallback(onKeyPress)) {
+        std::cerr << "Invalid setup for resize or keypress callback!\n";
+        return 1;
     }
 
     app_window.displayGame(game_state);

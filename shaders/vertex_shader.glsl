@@ -3,27 +3,15 @@
 /// NOTE each point position in model comprises a fully Q4 square!
 layout (location = 0) in vec3 aPos;
 
-// shrinks dims. to tile size
-uniform float shrinkWidthFactor;
-uniform float shrinkHeightFactor;
+// converts from NDC to canvas-style coordinates (projection)
+uniform mat4 originTransform;
 
-// places tile at equivalent position to board offset
+// scales square of tile towards proportion to screen dimensions
+uniform mat4 shrinkTransform;
+
+// places same tile at position to board offset (model = placement * shrink)
 uniform mat4 placeTransform;
 
 void main() {
-    const mat4 originTransform = mat4(
-        1.0f, 0.0f, 0.0f, -1.0f,
-        0.0f, 1.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
-
-    const mat4 shrinkTransform = mat4(
-        1.0f / shrinkWidthFactor, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f / shrinkHeightFactor, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
-
-    gl_Position = placeTransform * shrinkTransform * originTransform * vec4(aPos, 1.0f);
+    gl_Position = originTransform * placeTransform * shrinkTransform * vec4(aPos.xy, 0.0f, 1.0f);
 }

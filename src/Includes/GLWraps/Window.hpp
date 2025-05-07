@@ -55,12 +55,11 @@ namespace GLProject1::GLWraps {
 
         void displayGame(Game::Game& game_state);
 
-        void setResizeCallback(resize_func_ptr on_resize) noexcept;
-        void setKeyCallback(key_func_ptr on_key) noexcept;
+        [[nodiscard]] bool setResizeCallback(resize_func_ptr on_resize) noexcept;
+        [[nodiscard]] bool setKeyCallback(key_func_ptr on_key) noexcept;
 
     private:
         GLFWwindow* m_win_handle;
-        keycode_t m_current_key;
         int m_window_width;
         int m_window_height;
         bool m_ready_flag;

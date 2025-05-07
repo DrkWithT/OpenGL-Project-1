@@ -15,21 +15,33 @@
 #include "GLWraps/Window.hpp"
 
 namespace GLProject1::GLWraps {
-    void handleWindowResize([[maybe_unused]] GLFWwindow* raw_window, int new_width, int new_height) {
-        glViewport(0, 0, new_width, new_height);
+    ServiceRefs::ServiceRefs(Game::Game* game_state_ptr, Window* window_ptr) noexcept
+    : m_game_state_ptr {game_state_ptr}, m_window_ptr {window_ptr}, m_ready {m_game_state_ptr != nullptr && m_window_ptr != nullptr} {}
+
+    Game::Game* ServiceRefs::refGameState() noexcept {
+        return m_game_state_ptr;
+    }
+
+    Window* ServiceRefs::refWindow() noexcept {
+        return m_window_ptr;
+    }
+
+    ServiceRefs::operator bool() const noexcept {
+        return m_ready;
     }
 
     Window::Window() noexcept
-    : m_win_handle {nullptr} {}
+    : m_win_handle {nullptr}, m_ready_flag {false}, m_running {false} {}
 
-    Window::Window(const char* title, int width, int height, int swap_interval, WindowGLConfig gl_ctx_hints)
-    : m_win_handle {nullptr}, m_ready_flag {true} {
+    Window::Window(const char* title, int width, int height, WindowGLConfig gl_ctx_hints)
+    : m_win_handle {nullptr}, m_window_width {width}, m_window_height {height}, m_ready_flag {true}, m_running {false} {
         const auto [gl_major, gl_minor, gl_swap_interval] = gl_ctx_hints;
 
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, gl_major);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, gl_minor);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         m_win_handle = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
@@ -47,9 +59,10 @@ namespace GLProject1::GLWraps {
             return;
         }
 
-        glViewport(0, 0, width, height);
-        glfwSetFramebufferSizeCallback(m_win_handle, handleWindowResize);
-        glfwSwapInterval(swap_interval); // for vsync
+        glfwSwapInterval(gl_swap_interval); // for vsync
+
+        glfwGetFramebufferSize(m_win_handle, &width, &height);
+        glViewport(0, 0, m_window_width, m_window_height);
     }
 
     Window::~Window() {
@@ -58,30 +71,47 @@ namespace GLProject1::GLWraps {
 
     bool Window::isReady() const { return m_ready_flag; }
 
-    void Window::displayScene(Renderer& renderer) {
+    void Window::setViewingDims(int width, int height) noexcept {
+        m_window_width = width;
+        m_window_height = height;
+        glViewport(0, 0, m_window_width, m_window_height);
+    }
+
+    void Window::displayGame(Game::Game& game_state) {
         /// @note Guard clause here must trigger when the GL program build failed earlier, so I cannot draw well if that case applies.
-        if (!renderer.isReady()) {
+        if (!isReady() || m_running) {
             return;
         }
 
-        while (!glfwWindowShouldClose(m_win_handle)) {
-            /// NOTE: gets current control key pressed...
-            processInput();
+        m_running = true;
+        auto game_won = false;
 
-            renderer.renderScene(m_current_key);
+        while (!glfwWindowShouldClose(m_win_handle) && !game_won) {
+            game_state.display(static_cast<float>(m_window_width), static_cast<float>(m_window_height));
+            game_won = game_state.isPassed();
 
-            glfwSwapBuffers(m_win_handle);
             glfwPollEvents();
+            glfwSwapBuffers(m_win_handle);
         }
     }
 
-    void Window::processInput() {
-        if (glfwGetKey(m_win_handle, GLFW_KEY_UP) == GLFW_PRESS) {
-            m_current_key = keycode_t::key_arrow_up;
-        } else if (glfwGetKey(m_win_handle, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            m_current_key = keycode_t::key_arrow_down;
-        } else {
-            m_current_key = keycode_t::key_unknown;
+    bool Window::setResizeCallback(resize_func_ptr on_resize) noexcept {
+        if (!m_win_handle || !on_resize) {
+            return false;
         }
+
+        glfwSetFramebufferSizeCallback(m_win_handle, on_resize);
+
+        return true;
+    }
+
+    bool Window::setKeyCallback(key_func_ptr on_key) noexcept {
+        if (!m_win_handle || !on_key) {
+            return false;
+        }
+
+        glfwSetKeyCallback(m_win_handle, on_key);
+
+        return true;
     }
 }

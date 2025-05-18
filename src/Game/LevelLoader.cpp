@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 #include "Game/Board.hpp"
 #include "Game/LevelLoader.hpp"
 
@@ -10,12 +11,12 @@ namespace GLProject1::Game {
     constexpr BoardPair dud_pair = {dud_coord, dud_coord};
 
     LoadResult load_level(const char* file_path_cstr) {
-        auto find_first_of = [](const std::vector<std::vector<int>>& tiles, int target) {
+        auto find_tile_in = [](const Tiles& tiles, int target) {
             int row_i = 0;
             int col_i = 0;
 
             for (const auto& row : tiles) {
-                for (const auto& cell : row) {
+                for (const auto cell : row) {
                     if (cell == target) {
                         return BoardPair {
                             .row = row_i,
@@ -25,6 +26,7 @@ namespace GLProject1::Game {
                     ++col_i;
                 }
                 ++row_i;
+                col_i = 0;
             }
 
             return dud_pair;
@@ -37,32 +39,32 @@ namespace GLProject1::Game {
         }
 
         Tiles tiles;
+        std::vector<int> tile_row;
 
         std::istringstream strin;
         std::string line;
         std::string token;
 
         while (std::getline(reader, line)) {
+            if (line == end_name) {
+                break;
+            }
+
             strin.str(line);
 
-            strin >> token;
+            int temp = 0;
 
-            if (token == end_name) {
-                break;
-            } else {
-                std::vector<int> tile_row = {};
-                int temp = 0;
-
-                while (strin >> temp) {
-                    tile_row.push_back(temp);
-                }
-
-                tiles.emplace_back(tile_row);
+            while (strin >> temp) {
+                tile_row.push_back(temp);
             }
+
+            tiles.emplace_back(tile_row);
+            tile_row.clear();
+            strin.clear();
         }
 
-        const auto [spawn_rc, spawn_cc] = find_first_of(tiles, TileCode::player);
-        const auto [goal_rc, goal_cc] = find_first_of(tiles, TileCode::goal);
+        const auto [spawn_rc, spawn_cc] = find_tile_in(tiles, static_cast<int>(TileCode::player));
+        const auto [goal_rc, goal_cc] = find_tile_in(tiles, static_cast<int>(TileCode::goal));
 
         return {
             tiles,

@@ -137,6 +137,8 @@ int main(int argc, char* argv[]) {
 
     const auto& [tiles, spawn_row, spawn_col, goal_row, goal_col] = Game::load_level(argv[1]);
 
+    std::cout << "spawn_row=" << spawn_row << ", spawn_col=" << spawn_col << ", goal_row=" << goal_row << ", goal_col=" << goal_col << ", rows=" << tiles.size() << '\n';
+
     if (spawn_row == -1 || spawn_col == -1 || goal_row == -1 || goal_col == -1 || tiles.size() == 0) {
         std::cerr << "Invalid level: tile matrix empty OR player and/or goal tile data missing.\n";
         return 1;

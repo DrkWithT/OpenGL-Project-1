@@ -9,10 +9,11 @@
  * 
  */
 
-#include <utility>
+#include <iostream>
 #include "FileUtils/Reading.hpp"
 #include "GLWraps/ColorUtils.hpp"
 #include "GLWraps/Window.hpp"
+#include "Game/LevelLoader.hpp"
 #include "Game/Game.hpp"
 
 using namespace GLProject1;
@@ -128,14 +129,20 @@ void onKeyPress([[maybe_unused]] GLFWwindow* window_ptr, int keycode, [[maybe_un
     }
 }
 
-int main() {
-    std::vector<std::vector<int>> demo_data = {
-        std::vector {1, 1, 1, 1, 1},
-        {1, 2, 1, 3, 1},
-        {1, 0, 1, 0, 1},
-        {1, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1},
-    };
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: ./game <level-file-path>\n";
+        return 1;
+    }
+
+    const auto& [tiles, spawn_row, spawn_col, goal_row, goal_col] = Game::load_level(argv[1]);
+
+    std::cout << "spawn_row=" << spawn_row << ", spawn_col=" << spawn_col << ", goal_row=" << goal_row << ", goal_col=" << goal_col << ", rows=" << tiles.size() << '\n';
+
+    if (spawn_row == -1 || spawn_col == -1 || goal_row == -1 || goal_col == -1 || tiles.size() == 0) {
+        std::cerr << "Invalid level: tile matrix empty OR player and/or goal tile data missing.\n";
+        return 1;
+    }
 
     MyWindow app_window {window_title, window_width, window_height, app_gl_hints};
     Game::Game game_state {
@@ -146,9 +153,9 @@ int main() {
             .goal = goal_color
         },
         Game::Board {
-            std::move(demo_data),
-            Game::BoardPair {1, 1},
-            Game::BoardPair {1, 3},
+            tiles,
+            Game::BoardPair {spawn_row, spawn_col},
+            Game::BoardPair {goal_row, goal_col},
         },
         GLWraps::VAO {mesh_1},
         compileProgramWith(vertex_shader_path, fragment_shader_path),

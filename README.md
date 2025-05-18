@@ -4,7 +4,7 @@
 An ongoing OpenGL 3.3 & GLFW 3.3 demo using modern C++ and CMake. This is slowly becoming a 2-D maze game.
 
 ### Sample Output
-<img src="./readme_assets/Screenshot 2025-05-06 at 10.45.36 PM.png" width="320px">
+<img src="./readme_assets/Screenshot 2025-05-17 at 9.58.32 PM.png" width="320px">
 
 ### Setup Steps
  1. Get GLFW 3.3 on your system.

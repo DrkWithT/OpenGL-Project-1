@@ -40,7 +40,7 @@ namespace GLProject1::Game {
         BoardPair validateMove(BoardMove move) noexcept;
 
     public:
-        Board(std::vector<std::vector<int>>&& data, BoardPair player_pos, BoardPair goal_pos);
+        Board(const std::vector<std::vector<int>>& data, BoardPair player_pos, BoardPair goal_pos);
 
         [[nodiscard]] int getRowCount() const noexcept;
         [[nodiscard]] int getColCount() const noexcept;
